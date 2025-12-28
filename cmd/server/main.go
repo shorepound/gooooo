@@ -53,6 +53,12 @@ func main() {
 	}
 
 	pgStore := store.NewPostgres(db)
+	// Seed sample data if table is empty
+	if len(pgStore.List()) == 0 {
+		pgStore.Create(store.Item{Name: "Sample Item 1", Description: "Seeded at startup"})
+		pgStore.Create(store.Item{Name: "Sample Item 2", Description: "Seeded at startup"})
+	}
+
 	handlers.RegisterRoutes(r, pgStore)
 
 	srv := &http.Server{
