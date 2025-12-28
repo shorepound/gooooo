@@ -9,9 +9,11 @@ import (
 	"github.com/shorepound/gooooo/internal/store"
 )
 
-var s = store.New()
+var backend store.Backend
 
-func RegisterRoutes(r *chi.Mux) {
+// RegisterRoutes registers HTTP routes and injects a store backend.
+func RegisterRoutes(r *chi.Mux, b store.Backend) {
+	backend = b
 	r.Get("/health", Health)
 	r.Get("/items", ListItems)
 	r.Post("/items", CreateItem)
@@ -25,7 +27,7 @@ func Health(w http.ResponseWriter, r *http.Request) {
 }
 
 func ListItems(w http.ResponseWriter, r *http.Request) {
-	items := s.List()
+	items := backend.List()
 	writeJSON(w, http.StatusOK, items)
 }
 
@@ -35,7 +37,7 @@ func CreateItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	created := s.Create(in)
+	created := backend.Create(in)
 	writeJSON(w, http.StatusCreated, created)
 }
 
@@ -46,7 +48,7 @@ func GetItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
 	}
-	item, ok := s.Get(id)
+	item, ok := backend.Get(id)
 	if !ok {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
@@ -66,7 +68,7 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid json", http.StatusBadRequest)
 		return
 	}
-	updated, err := s.Update(id, in)
+	updated, err := backend.Update(id, in)
 	if err != nil {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
@@ -81,7 +83,7 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid id", http.StatusBadRequest)
 		return
 	}
-	if !s.Delete(id) {
+	if !backend.Delete(id) {
 		http.Error(w, "not found", http.StatusNotFound)
 		return
 	}

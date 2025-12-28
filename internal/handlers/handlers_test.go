@@ -13,9 +13,8 @@ import (
 )
 
 func setupRouter() *chi.Mux {
-	s = store.New()
 	r := chi.NewRouter()
-	RegisterRoutes(r)
+	RegisterRoutes(r, store.New())
 	return r
 }
 

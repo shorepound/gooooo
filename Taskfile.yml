@@ -1,0 +1,36 @@
+version: '3'
+tasks:
+  build:
+    desc: Build the project
+    cmds:
+      - go build -v ./...
+
+  run:
+    desc: Run the server locally
+    cmds:
+      - go run ./cmd/server
+
+  test:
+    desc: Run the test suite
+    cmds:
+      - go test ./...
+
+  docker-build:
+    desc: Build docker image locally
+    cmds:
+      - docker build -t gooooo:latest .
+
+  docker-run:
+    desc: Run docker image locally (exposes 8080)
+    cmds:
+      - docker run --rm -p 8080:8080 -e DATABASE_URL="${DATABASE_URL}" gooooo:latest
+
+  compose-up:
+    desc: Start local Postgres via docker-compose
+    cmds:
+      - docker compose up -d
+
+  compose-down:
+    desc: Stop local compose services
+    cmds:
+      - docker compose down

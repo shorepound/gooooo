@@ -11,6 +11,15 @@ type Item struct {
 	Description string `json:"description,omitempty"`
 }
 
+// Backend defines the operations required by the handlers.
+type Backend interface {
+	Create(Item) Item
+	List() []Item
+	Get(int64) (Item, bool)
+	Update(int64, Item) (Item, error)
+	Delete(int64) bool
+}
+
 type Store struct {
 	mu     sync.RWMutex
 	items  map[int64]Item
